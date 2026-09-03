@@ -157,21 +157,21 @@ details a{color:var(--primary);font-weight:600}
             <rect x="8" y="8" width="204" height="16" rx="6" fill="#005EA9"/>
             <rect x="8" y="24" width="204" height="18" fill="#EDF2F7"/>
             <rect x="16" y="29" width="30" height="8" rx="2" fill="#BFD7E9"/><rect x="52" y="29" width="30" height="8" rx="2" fill="#BFD7E9"/>
-            <rect x="90" y="27" width="66" height="12" rx="3" fill="#00BF5A"/><text x="123" y="36" font-family="Poppins,Arial" font-size="7.5" font-weight="600" fill="#fff" text-anchor="middle">Scan deze pagina</text>
+            <rect x="84" y="27" width="84" height="12" rx="3" fill="#00BF5A"/><text x="126" y="36" font-family="Poppins,Arial" font-size="6.5" font-weight="600" fill="#fff" text-anchor="middle">DFO Garantiewoorden Check</text>
             <path d="M123 92 C123 70 123 60 123 44" stroke="#005EA9" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
             <path d="M118 50 L123 42 L128 50" stroke="#005EA9" stroke-width="2" fill="none"/>
-            <rect x="80" y="86" width="86" height="16" rx="4" fill="#fff" stroke="#00BF5A" stroke-width="1.5"/><text x="123" y="97" font-family="Poppins,Arial" font-size="8" font-weight="600" fill="#005EA9" text-anchor="middle">Scan deze pagina</text>
+            <rect x="70" y="86" width="106" height="16" rx="4" fill="#fff" stroke="#00BF5A" stroke-width="1.5"/><text x="123" y="97" font-family="Poppins,Arial" font-size="7" font-weight="600" fill="#005EA9" text-anchor="middle">DFO Garantiewoorden Check</text>
             <text x="30" y="62" font-family="Poppins,Arial" font-size="8" fill="#66728A">1. Sleep de link</text>
             <text x="30" y="74" font-family="Poppins,Arial" font-size="8" fill="#66728A">naar de bladwijzerbalk</text>
           </svg>
-          <p><b>2. Bookmarklet (één klik).</b> Sleep deze link naar uw bladwijzerbalk: <a id="bm" href="#">Scan deze pagina</a>. Ziet u geen bladwijzerbalk? Zet die aan met Ctrl+Shift+B (Chrome/Edge) of Cmd+Shift+B (Mac).</p>
+          <p><b>2. Bookmarklet (één klik).</b> Sleep deze link naar uw bladwijzerbalk: <a id="bm" href="#" title="DFO Garantiewoorden Check">DFO Garantiewoorden Check</a>. Ziet u geen bladwijzerbalk? Zet die aan met Ctrl+Shift+B (Chrome/Edge) of Cmd+Shift+B (Mac).</p>
         </div>
         <div class="step">
           <svg viewBox="0 0 220 120" role="img" aria-label="Klik op de bladwijzer op een pagina van uw site">
             <rect x="8" y="8" width="96" height="104" rx="6" fill="#fff" stroke="#005EA9" stroke-width="2"/>
             <rect x="8" y="8" width="96" height="16" rx="6" fill="#005EA9"/>
             <rect x="8" y="24" width="96" height="18" fill="#EDF2F7"/>
-            <rect x="16" y="27" width="62" height="12" rx="3" fill="#00BF5A"/><text x="47" y="36" font-family="Poppins,Arial" font-size="7" font-weight="600" fill="#fff" text-anchor="middle">Scan deze pagina</text>
+            <rect x="14" y="27" width="84" height="12" rx="3" fill="#00BF5A"/><text x="56" y="36" font-family="Poppins,Arial" font-size="6" font-weight="600" fill="#fff" text-anchor="middle">DFO Garantiewoorden Check</text>
             <path d="M52 56 l0 -8 l4 4 l3 -1 l-6 -8" fill="#1F2A37" transform="translate(-4 12)"/>
             <rect x="18" y="56" width="76" height="4" rx="2" fill="#4F86B8"/><rect x="18" y="66" width="70" height="4" rx="2" fill="#4F86B8"/><rect x="18" y="76" width="74" height="4" rx="2" fill="#4F86B8"/><rect x="18" y="86" width="50" height="4" rx="2" fill="#4F86B8"/>
             <text x="56" y="104" font-family="Poppins,Arial" font-size="7.5" fill="#66728A" text-anchor="middle">uw eigen website</text>
@@ -522,7 +522,7 @@ $('print').onclick=function(){
 // bookmarklet: laadt paginatekst via hash
 var toolUrl=location.href.split('#')[0];
 $('bm').href='javascript:(function(){var t=(document.querySelector("main")||document.body).innerText;window.open('+JSON.stringify(toolUrl)+'+"#t="+encodeURIComponent(t.slice(0,150000)));})();';
-$('bm').onclick=function(e){e.preventDefault();alert('Sleep deze link naar uw bladwijzerbalk in plaats van erop te klikken.');};
+$('bm').onclick=function(e){e.preventDefault();alert('Sleep deze link naar uw bladwijzerbalk in plaats van erop te klikken. De bladwijzer heet dan "DFO Garantiewoorden Check".');};
 if(location.hash.indexOf('#t=')===0){try{$('txt').value=decodeURIComponent(location.hash.slice(3));history.replaceState(null,'',location.pathname+location.search);scan();}catch(e){}}
 })();
 </script>
