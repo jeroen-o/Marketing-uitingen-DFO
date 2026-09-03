@@ -84,8 +84,8 @@ details a{color:var(--primary);font-weight:600}
 .filters{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}
 .filters button{padding:5px 12px;font-size:12.5px;background:transparent;color:var(--ink-2);border-color:var(--line);border-radius:999px}
 .filters button.on{background:var(--primary);color:#fff;border-color:var(--primary)}
-.promo{background:var(--soft);border-radius:10px;padding:16px 18px;margin-top:20px;font-size:13.5px;color:var(--ink)}
-.promo b{color:var(--primary)}
+.promo{background:#FFF4E5;border:1px solid #F5C889;border-radius:10px;padding:16px 18px;margin-top:20px;font-size:13.5px;color:var(--ink)}
+.promo b{color:#C46A00}
 .promo p{margin:0 0 6px}.promo p:last-child{margin:0}
 .footer{background:#005EA9;color:#fff;margin-top:40px;padding:30px 24px}
 .footer .in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;font-size:13px}
@@ -107,6 +107,10 @@ details a{color:var(--primary);font-weight:600}
 .site .st{flex:0 0 auto;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px}
 .site .ok .st{background:var(--laag-bg);color:var(--laag)} .site .nee .st{background:var(--hoog-bg);color:var(--hoog)} .site .chk .st{background:var(--info-bg);color:var(--info)}
 .site .lb{font-weight:600}.site .dt{color:var(--muted);font-size:12.5px}
+.promo{padding:0;overflow:hidden}
+.promo-bar{background:#F28C00;color:#fff;font-size:11.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:8px 18px}
+.promo-title{font-weight:600;color:#C46A00;font-size:15px;margin:0 0 6px}
+.promo>p{padding:0 18px}.promo>p:last-child{padding-bottom:16px}.promo .promo-title{padding-top:14px}
 </style>
 </head>
 <body>
@@ -222,9 +226,10 @@ details a{color:var(--primary);font-weight:600}
     <ul class="site" id="site"><li class="empty">Wordt gevuld na de scan.</li></ul>
   </div>
   <div class="promo">
-    <p><b>Compleet rapport voor uw kantoor</b></p>
+    <div class="promo-bar">Aanbod</div>
+    <p class="promo-title">Compleet rapport voor uw kantoor</p>
     <p>Naast de website beoordeelt DFO ook uw algemene voorwaarden, de opdracht tot dienstverlening en het vergelijkingsdocument op onderlinge consistentie en de reikwijdte van de zorgplicht, met concrete tekstvoorstellen. € 2.495,- excl. btw per kantoor; gebruikers van eBlinqx Connect en eBlinqx Hypotheekadvies ontvangen € 1.000,- korting.</p>
-    <p><a href="mailto:info@dfobv.nl?subject=DFO%20Garantiewoorden%20compleet%20rapport" style="color:var(--primary);font-weight:600">Vraag informatie aan</a></p>
+    <p><a href="mailto:info@dfobv.nl?subject=DFO%20Garantiewoorden%20compleet%20rapport" style="display:inline-block;background:#F28C00;color:#fff;font-weight:600;padding:8px 16px;border-radius:6px;text-decoration:none">Vraag informatie aan</a></p>
   </div>
 </div>
 </div>
@@ -497,7 +502,7 @@ $('print').onclick=function(){
   'ul.consist{padding-left:0;list-style:none;margin:0}ul.consist li{margin:0 0 6px;padding-left:0;font-size:12px}'+
   'ul.site{list-style:none;padding:0;margin:0;columns:2;column-gap:20px}ul.site li{display:flex;gap:7px;align-items:flex-start;padding:4px 0;break-inside:avoid;font-size:11.5px}ul.site .st{flex:0 0 auto;width:17px;height:17px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}ul.site .ok .st{background:#E6F4EA;color:#1E7A3E}ul.site .nee .st{background:#FBEAE8;color:#B3261E}ul.site .chk .st{background:#E4F1F4;color:#0F5C6E}ul.site .lb{font-weight:600}ul.site .dt{color:#66728A;font-size:11px}'+
   '.prev{white-space:pre-wrap;font-size:11px;line-height:1.55;border:1px solid #D6DEE6;border-radius:8px;padding:10px 12px;background:#F7F9FB}'+
-  '.offer{page-break-inside:avoid;margin-top:26px;border:2px solid #005EA9;border-radius:10px;overflow:hidden}.offer .oh{background:#005EA9;color:#fff;padding:10px 16px;font-size:14px;font-weight:600}.offer .ob{padding:14px 16px;display:grid;grid-template-columns:1.4fr 1fr;gap:16px}.offer p{margin:0 0 8px;font-size:12px}.offer ul{margin:0 0 8px;padding-left:18px;font-size:12px}.offer .pr{background:#EDF2F7;border-radius:8px;padding:12px 14px}.offer .pr .p{font-size:20px;font-weight:700;color:#005EA9;line-height:1.1}.offer .pr .s{font-size:11px;color:#66728A}.offer .pr .k{margin-top:8px;padding:6px 8px;background:#00BF5A;color:#fff;border-radius:6px;font-weight:600;font-size:12px}.offer .ct{font-size:11.5px;color:#3F4B5A}.offer .ct b{color:#005EA9}'+
+  '.offer{page-break-inside:avoid;margin-top:26px;border:2px solid #F28C00;border-radius:10px;overflow:hidden}.offer .oh{background:#F28C00;color:#fff;padding:10px 16px;font-size:14px;font-weight:600}.offer .ob{padding:14px 16px;display:grid;grid-template-columns:1.4fr 1fr;gap:16px}.offer p{margin:0 0 8px;font-size:12px}.offer ul{margin:0 0 8px;padding-left:18px;font-size:12px}.offer .pr{background:#FFF4E5;border-radius:8px;padding:12px 14px}.offer .pr .p{font-size:20px;font-weight:700;color:#C46A00;line-height:1.1}.offer .pr .s{font-size:11px;color:#66728A}.offer .pr .k{margin-top:8px;padding:6px 8px;background:#00BF5A;color:#fff;border-radius:6px;font-weight:600;font-size:12px}.offer .ct{font-size:11.5px;color:#3F4B5A}.offer .ct b{color:#005EA9}'+
   '.ft{margin-top:22px;padding-top:8px;border-top:1px solid #D6DEE6;font-size:10.5px;color:#66728A}@media print{.offer .pr .k{-webkit-print-color-adjust:exact;print-color-adjust:exact}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}';
   var html='<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>'+esc(brand)+' – rapport</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><style>'+css+'</style></head><body>'+
   '<div class="hd"><img src="'+logo+'" alt="Bureau DFO"><div class="r"><b>'+esc(brand)+'</b>Rapport · '+datum+'<br>'+woorden+' woorden gescand</div></div>'+
