@@ -111,6 +111,9 @@ details a{color:var(--primary);font-weight:600}
 .promo-bar{background:#F28C00;color:#fff;font-size:11.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:8px 18px}
 .promo-title{font-weight:600;color:#C46A00;font-size:15px;margin:0 0 6px}
 .promo>p{padding:0 18px}.promo>p:last-child{padding-bottom:16px}.promo .promo-title{padding-top:14px}
+.pages{display:none;margin:0 0 12px;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--primary);border-radius:8px;font-size:13px}
+.pages.on{display:block}.pages .k{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.pages ul{margin:0;padding:0;list-style:none}.pages li{padding:2px 0;word-break:break-all}.pages a{color:var(--primary);font-weight:500}.pages .t{color:var(--ink-2)}
 </style>
 </head>
 <body>
@@ -205,6 +208,7 @@ details a{color:var(--primary);font-weight:600}
 </div>
 
 <div>
+  <div class="pages" id="pages"></div>
   <div class="tiles">
     <div class="tile hoog"><div class="k">Hoog</div><div class="v" id="nHoog">–</div></div>
     <div class="tile midden"><div class="k">Midden</div><div class="v" id="nMidden">–</div></div>
@@ -414,6 +418,7 @@ function websiteCheck(text){
   return out;
 }
 var SITEN={ok:'\u2713',nee:'\u2013',chk:'?'}, SITEL={ok:'aanwezig',nee:'ontbreekt',chk:'controleren'};
+function pagesOf(text){var re=/^=== Pagina: (.*?) ===$/gmu,m,out=[];while((m=re.exec(text))!==null){var p=m[1].split(' — ');out.push({title:p[0].trim(),url:(p[1]||'').trim()});}return out;}
 function pageOf(text,pos){var re=/^=== Pagina: (.*?) ===$/gmu,m,last=null;while((m=re.exec(text))!==null){if(m.index>pos)break;last=m[1];}return last;}
 function pageCount(text){var n=0,re=/^=== Pagina: .*? ===$/gmu;while(re.exec(text))n++;return n;}
 function render(hits,text){
@@ -454,6 +459,9 @@ function render(hits,text){
     });
   }
   // consistentie
+  var pg=$('pages'),pl=pagesOf(text);
+  if(pl.length){pg.className='pages on';pg.innerHTML='<div class="k">Gecheckt'+(pl.length>1?' ('+pl.length+' pagina\'s)':'')+'</div><ul>'+pl.map(function(p){return '<li>'+(p.url?'<a href="'+esc(p.url)+'" target="_blank" rel="noopener">'+esc(p.url)+'</a>'+(p.title?' <span class="t">· '+esc(p.title)+'</span>':''):'<span class="t">'+esc(p.title)+'</span>')+'</li>';}).join('')+'</ul>';}
+  else{pg.className='pages';pg.innerHTML='';}
   var sb=$('site');sb.innerHTML='';
   if(text.trim()){websiteCheck(text).forEach(function(x){var li=document.createElement('li');li.className=x.st;li.innerHTML='<span class="st" title="'+SITEL[x.st]+'">'+SITEN[x.st]+'</span><div><div class="lb">'+esc(x.lb)+'</div><div class="dt">'+esc(x.dt)+'</div></div>';sb.appendChild(li);});}
   else sb.innerHTML='<li class="empty">Wordt gevuld na de scan.</li>';
@@ -468,7 +476,7 @@ function render(hits,text){
 function buildReport(hits,text){
   if(!text.trim())return '';
   var d=new Date(),ds=d.toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
-  var lines=['GARANTIEWOORDEN-SCAN · '+ds,'',(pageCount(text)>1?'Gescande pagina\'s: '+pageCount(text):''),'Tekstlengte: '+text.split(/\s+/).filter(Boolean).length+' woorden','Bevindingen: '+hits.length+' (hoog '+hits.filter(function(h){return h.rule.sev==='hoog';}).length+', midden '+hits.filter(function(h){return h.rule.sev==='midden';}).length+', laag '+hits.filter(function(h){return h.rule.sev==='laag';}).length+', controleren '+hits.filter(function(h){return h.rule.sev==='info';}).length+')',''];
+  var lines=['GARANTIEWOORDEN-SCAN · '+ds,'','Gecheckt: '+(pagesOf(text).length?pagesOf(text).map(function(p){return p.url||p.title;}).join(' | '):'geplakte tekst (geen URL bekend)'),'Tekstlengte: '+text.split(/\s+/).filter(Boolean).length+' woorden','Bevindingen: '+hits.length+' (hoog '+hits.filter(function(h){return h.rule.sev==='hoog';}).length+', midden '+hits.filter(function(h){return h.rule.sev==='midden';}).length+', laag '+hits.filter(function(h){return h.rule.sev==='laag';}).length+', controleren '+hits.filter(function(h){return h.rule.sev==='info';}).length+')',''];
   hits.forEach(function(h,i){lines.push((i+1)+'. ['+SEVN[h.rule.sev].toUpperCase()+' · '+h.rule.cat+'] "'+h.term+'"'+(pageCount(text)>1&&pageOf(text,h.start)?' — '+pageOf(text,h.start):''));lines.push('   Waarom: '+h.rule.why);lines.push('   Alternatief: '+h.rule.alt);lines.push('');});
   lines.push('CONSISTENTIE EN CONTEXT');consistency(text,hits).forEach(function(x){lines.push('- ['+SEVN[x.sev]+'] '+x.t);});
   lines.push('','VERPLICHTE WEBSITE-ELEMENTEN (alleen zinvol bij een volledige pagina)');websiteCheck(text).forEach(function(x){lines.push('- ['+SITEL[x.st]+'] '+x.lb+': '+x.dt);});
@@ -495,7 +503,7 @@ $('print').onclick=function(){
   active=keep;render(lastHits,lastText);
   var logo=document.querySelector('.top .logo img').src;
   var datum=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
-  var woorden=lastText.split(/\s+/).filter(Boolean).length;
+  var woorden=lastText.split(/\s+/).filter(Boolean).length;var pl=pagesOf(lastText);
   var css='@page{size:A4;margin:16mm 14mm}body{margin:0;font:12.5px/1.5 Poppins,Arial,Helvetica,sans-serif;color:#1F2A37;background:#fff}'+
   '.hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #005EA9;padding:0 0 12px;margin:0 0 18px}.hd img{height:42px}.hd .r{text-align:right;font-size:11.5px;color:#66728A}.hd .r b{display:block;color:#005EA9;font-size:15px;font-weight:600}'+
   'h1{font-size:22px;color:#005EA9;margin:0 0 4px;font-weight:600}.sub{color:#66728A;margin:0 0 16px;font-size:12px}'+
@@ -508,10 +516,11 @@ $('print').onclick=function(){
   'ul.site{list-style:none;padding:0;margin:0;columns:2;column-gap:20px}ul.site li{display:flex;gap:7px;align-items:flex-start;padding:4px 0;break-inside:avoid;font-size:11.5px}ul.site .st{flex:0 0 auto;width:17px;height:17px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}ul.site .ok .st{background:#E6F4EA;color:#1E7A3E}ul.site .nee .st{background:#FBEAE8;color:#B3261E}ul.site .chk .st{background:#E4F1F4;color:#0F5C6E}ul.site .lb{font-weight:600}ul.site .dt{color:#66728A;font-size:11px}'+
   '.prev{white-space:pre-wrap;font-size:11px;line-height:1.55;border:1px solid #D6DEE6;border-radius:8px;padding:10px 12px;background:#F7F9FB}'+
   '.offer{page-break-inside:avoid;margin-top:26px;border:2px solid #F28C00;border-radius:10px;overflow:hidden}.offer .oh{background:#F28C00;color:#fff;padding:10px 16px;font-size:14px;font-weight:600}.offer .ob{padding:14px 16px;display:grid;grid-template-columns:1.4fr 1fr;gap:16px}.offer p{margin:0 0 8px;font-size:12px}.offer ul{margin:0 0 8px;padding-left:18px;font-size:12px}.offer .pr{background:#FFF4E5;border-radius:8px;padding:12px 14px}.offer .pr .p{font-size:20px;font-weight:700;color:#C46A00;line-height:1.1}.offer .pr .s{font-size:11px;color:#66728A}.offer .pr .k{margin-top:8px;padding:6px 8px;background:#00BF5A;color:#fff;border-radius:6px;font-weight:600;font-size:12px}.offer .ct{font-size:11.5px;color:#3F4B5A}.offer .ct b{color:#005EA9}'+
+  '.pages{margin:0 0 12px;padding:8px 12px;background:#EDF2F7;border-left:4px solid #005EA9;border-radius:6px;font-size:11.5px}.pages .k{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:#66728A;font-weight:600;margin-bottom:3px}.pages ul{margin:0;padding:0;list-style:none}.pages li{word-break:break-all}.pages .t{color:#66728A}'+
   '.ft{margin-top:22px;padding-top:8px;border-top:1px solid #D6DEE6;font-size:10.5px;color:#66728A}@media print{.offer .pr .k{-webkit-print-color-adjust:exact;print-color-adjust:exact}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}';
   var html='<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>'+esc(brand)+' – rapport</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"><style>'+css+'</style></head><body>'+
-  '<div class="hd"><img src="'+logo+'" alt="Bureau DFO"><div class="r"><b>'+esc(brand)+'</b>Rapport · '+datum+'<br>'+woorden+' woorden gescand</div></div>'+
-  '<h1>Wat belooft uw tekst?</h1><p class="sub">Signalering van garantiewoorden, zorgplicht-verruimende beloften, reclameregels en verplichte website-elementen. Geen juridisch advies.</p>'+
+  '<div class="hd"><img src="'+logo+'" alt="Bureau DFO"><div class="r"><b>'+esc(brand)+'</b>Rapport · '+datum+'<br>'+woorden+' woorden gescand'+(pl.length?' · '+pl.length+' pagina'+(pl.length>1?'\'s':''):'')+'</div></div>'+
+  '<h1>Wat belooft uw tekst?</h1>'+(pl.length?'<div class="pages"><div class="k">Gecheckte pagina'+(pl.length>1?'\'s':'')+'</div><ul>'+pl.map(function(p){return '<li>'+esc(p.url||p.title)+(p.url&&p.title?' <span class="t">· '+esc(p.title)+'</span>':'')+'</li>';}).join('')+'</ul></div>':'<div class="pages"><div class="k">Gecheckt</div>Geplakte tekst (geen URL bekend)</div>')+'<p class="sub">Signalering van garantiewoorden, zorgplicht-verruimende beloften, reclameregels en verplichte website-elementen. Geen juridisch advies.</p>'+
   '<div class="tiles"><div class="tile hoog"><div class="k">Hoog</div><div class="v">'+nH+'</div></div><div class="tile midden"><div class="k">Midden</div><div class="v">'+nM+'</div></div><div class="tile laag"><div class="k">Laag</div><div class="v">'+nL+'</div></div><div class="tile"><div class="k">Woorden/zin</div><div class="v">'+nZ+'</div></div><div class="tile"><div class="k">Bevindingen</div><div class="v">'+lastHits.length+'</div></div></div>'+
   '<h2>1. Bevindingen</h2><div>'+findings+'</div>'+
   '<h2>2. Consistentie en context</h2><ul class="consist">'+consist+'</ul>'+
