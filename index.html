@@ -133,6 +133,8 @@ details a{color:var(--primary);font-weight:600}
       <button id="scan">Scan tekst</button>
       <button class="sec" id="voorbeeld">Voorbeeldtekst laden</button>
       <button class="sec" id="wis">Wissen</button>
+      <button class="acc" id="print" disabled>Rapport printen / PDF</button>
+      <button class="sec" id="copy" disabled>Rapport kopiëren</button>
       <span class="hint" id="count"></span>
     </div>
     <details open id="howto">
@@ -164,7 +166,7 @@ details a{color:var(--primary);font-weight:600}
             <text x="30" y="62" font-family="Poppins,Arial" font-size="8" fill="#66728A">1. Sleep de link</text>
             <text x="30" y="74" font-family="Poppins,Arial" font-size="8" fill="#66728A">naar de bladwijzerbalk</text>
           </svg>
-          <p><b>2. Bookmarklet (één klik).</b> Sleep deze link naar uw bladwijzerbalk: <a id="bm" href="#" title="DFO Garantiewoorden Check">DFO Garantiewoorden Check</a>. Ziet u geen bladwijzerbalk? Zet die aan met Ctrl+Shift+B (Chrome/Edge) of Cmd+Shift+B (Mac).</p>
+          <p><b>2. Bookmarklet (één klik).</b> Sleep deze link naar uw bladwijzerbalk: <a id="bm" href="#" title="DFO Garantiewoorden Check">DFO Garantiewoorden Check</a>. Ziet u geen bladwijzerbalk? Zet die aan met Ctrl+Shift+B (Chrome/Edge/Firefox) of Cmd+Shift+B (Mac; in Safari heet dit de favorietenbalk). Op iPhone/iPad kunt u niet slepen: maak een willekeurige bladwijzer, bewerk die en plak de link-code als adres.</p>
         </div>
         <div class="step">
           <svg viewBox="0 0 220 120" role="img" aria-label="Klik op de bladwijzer op een pagina van uw site">
@@ -218,10 +220,6 @@ details a{color:var(--primary);font-weight:600}
     <h2>Verplichte website-elementen</h2>
     <p class="hint" style="margin:0 0 8px">Alleen zinvol als u de hele pagina (inclusief voettekst) of de contact-/disclaimerpagina hebt geplakt. Een ontbrekend element kan elders op de site staan.</p>
     <ul class="site" id="site"><li class="empty">Wordt gevuld na de scan.</li></ul>
-  </div>
-  <div class="row">
-    <button class="acc" id="print" disabled>Rapport printen / PDF</button>
-    <button class="sec" id="copy" disabled>Rapport kopiëren</button>
   </div>
   <div class="promo">
     <p><b>Compleet rapport voor uw kantoor</b></p>
