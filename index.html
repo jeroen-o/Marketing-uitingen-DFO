@@ -143,7 +143,7 @@ details a{color:var(--primary);font-weight:600}
     </div>
     <details open id="howto">
       <summary><span class="ico" aria-hidden="true">i</span>Een hele webpagina scannen <span class="ico-hint">(uitleg met plaatjes)</span></summary>
-      <p>Een webpagina kan niet rechtstreeks vanuit deze check worden opgehaald; browsers blokkeren dat. Er zijn twee manieren die wel werken.</p>
+      <p>Een webpagina of complete site kan niet rechtstreeks vanuit deze check worden opgehaald; browsers blokkeren dat. Er zijn twee manieren die wel werken, en met de bookmarklet kunt u meerdere pagina's na elkaar aan één scan toevoegen. Plakt u zelf meerdere pagina's, zet dan boven elke pagina een regel <code>=== Pagina: naam ===</code>.</p>
       <div class="steps">
         <div class="step">
           <svg viewBox="0 0 220 120" role="img" aria-label="Selecteer en kopieer de tekst van de pagina">
@@ -190,7 +190,7 @@ details a{color:var(--primary);font-weight:600}
             <rect x="146" y="70" width="56" height="10" rx="3" fill="#005EA9"/><text x="174" y="77.5" font-family="Poppins,Arial" font-size="7" font-weight="600" fill="#fff" text-anchor="middle">Bevindingen</text>
             <text x="174" y="104" font-family="Poppins,Arial" font-size="7.5" fill="#66728A" text-anchor="middle">deze check</text>
           </svg>
-          <p><b>3. Scannen.</b> Ga naar een pagina van uw eigen site en klik op de bladwijzer. De tekst van die pagina opent automatisch in deze check en wordt direct gescand. Herhaal dit per pagina.</p>
+          <p><b>3. Scannen.</b> Ga naar een pagina van uw eigen site en klik op de bladwijzer. De tekst van die pagina opent automatisch in deze check en wordt direct gescand. <b>Meerdere pagina's:</b> laat dit tabblad open, blader in het tabblad van uw website door naar de volgende pagina en klik daar opnieuw op de bladwijzer; de tekst wordt toegevoegd en per bevinding ziet u op welke pagina het staat. Opent u een pagina in een nieuw tabblad, dan start de browser een nieuwe scan. Klik op <i>Wissen</i> om opnieuw te beginnen.</p>
         </div>
       </div>
       <p class="hint">De bookmarklet leest alleen de zichtbare tekst van de pagina en stuurt die naar uw eigen browservenster; er wordt niets naar een server verzonden.</p>
@@ -321,6 +321,9 @@ function scan(){
       hits.push({start:m.index,end:m.index+m[0].length,term:m[0],rule:rule,ri:ri});
     }
   });
+  // treffers in paginakoppen (=== Pagina: … ===) negeren
+  var hdr=[],hre=/^=== Pagina: .*? ===$/gmu,hm;while((hm=hre.exec(text))!==null)hdr.push([hm.index,hm.index+hm[0].length]);
+  if(hdr.length)hits=hits.filter(function(h){return !hdr.some(function(r){return h.start>=r[0]&&h.start<r[1];});});
   // overlappen: sterkste (hoog>midden>laag>info) en langste wint
   var order={hoog:0,midden:1,laag:2,info:3};
   hits.sort(function(a,b){return a.start-b.start||order[a.rule.sev]-order[b.rule.sev]||(b.end-b.start)-(a.end-a.start);});
@@ -411,6 +414,8 @@ function websiteCheck(text){
   return out;
 }
 var SITEN={ok:'\u2713',nee:'\u2013',chk:'?'}, SITEL={ok:'aanwezig',nee:'ontbreekt',chk:'controleren'};
+function pageOf(text,pos){var re=/^=== Pagina: (.*?) ===$/gmu,m,last=null;while((m=re.exec(text))!==null){if(m.index>pos)break;last=m[1];}return last;}
+function pageCount(text){var n=0,re=/^=== Pagina: .*? ===$/gmu;while(re.exec(text))n++;return n;}
 function render(hits,text){
   var counts={hoog:0,midden:0,laag:0,info:0};
   hits.forEach(function(h){counts[h.rule.sev]++;});
@@ -441,7 +446,7 @@ function render(hits,text){
       var g=groups[k],rule=RULES[k];
       var terms=[];g.forEach(function(h){var t=h.term.toLowerCase();if(terms.indexOf(t)<0)terms.push(t);});
       var d=document.createElement('div');d.className='find';
-      d.innerHTML='<div class="h"><span class="sev '+rule.sev+'">'+SEVN[rule.sev]+'</span><span class="term">'+esc(terms.join(' · '))+'</span><span class="cat">'+esc(rule.cat)+(g.length>1?' · '+g.length+'×':'')+'</span></div>'+
+      d.innerHTML='<div class="h"><span class="sev '+rule.sev+'">'+SEVN[rule.sev]+'</span><span class="term">'+esc(terms.join(' · '))+'</span><span class="cat">'+esc(rule.cat)+(g.length>1?' · '+g.length+'×':'')+(function(){if(pageCount(text)<2)return '';var ps=[];g.forEach(function(h){var p=pageOf(text,h.start);if(p&&ps.indexOf(p)<0)ps.push(p);});return ps.length?' · '+esc(ps.map(function(p){return p.split(' — ')[0];}).join(', ')):'';})()+'</span></div>'+
         '<div class="why">'+esc(rule.why)+'</div>'+
         '<div class="alt"><b>Alternatief:</b> '+esc(rule.alt)+'</div>'+
         '<div class="ctx">'+context(text,g[0])+'</div>';
@@ -463,8 +468,8 @@ function render(hits,text){
 function buildReport(hits,text){
   if(!text.trim())return '';
   var d=new Date(),ds=d.toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
-  var lines=['GARANTIEWOORDEN-SCAN · '+ds,'','Tekstlengte: '+text.split(/\s+/).filter(Boolean).length+' woorden','Bevindingen: '+hits.length+' (hoog '+hits.filter(function(h){return h.rule.sev==='hoog';}).length+', midden '+hits.filter(function(h){return h.rule.sev==='midden';}).length+', laag '+hits.filter(function(h){return h.rule.sev==='laag';}).length+', controleren '+hits.filter(function(h){return h.rule.sev==='info';}).length+')',''];
-  hits.forEach(function(h,i){lines.push((i+1)+'. ['+SEVN[h.rule.sev].toUpperCase()+' · '+h.rule.cat+'] "'+h.term+'"');lines.push('   Waarom: '+h.rule.why);lines.push('   Alternatief: '+h.rule.alt);lines.push('');});
+  var lines=['GARANTIEWOORDEN-SCAN · '+ds,'',(pageCount(text)>1?'Gescande pagina\'s: '+pageCount(text):''),'Tekstlengte: '+text.split(/\s+/).filter(Boolean).length+' woorden','Bevindingen: '+hits.length+' (hoog '+hits.filter(function(h){return h.rule.sev==='hoog';}).length+', midden '+hits.filter(function(h){return h.rule.sev==='midden';}).length+', laag '+hits.filter(function(h){return h.rule.sev==='laag';}).length+', controleren '+hits.filter(function(h){return h.rule.sev==='info';}).length+')',''];
+  hits.forEach(function(h,i){lines.push((i+1)+'. ['+SEVN[h.rule.sev].toUpperCase()+' · '+h.rule.cat+'] "'+h.term+'"'+(pageCount(text)>1&&pageOf(text,h.start)?' — '+pageOf(text,h.start):''));lines.push('   Waarom: '+h.rule.why);lines.push('   Alternatief: '+h.rule.alt);lines.push('');});
   lines.push('CONSISTENTIE EN CONTEXT');consistency(text,hits).forEach(function(x){lines.push('- ['+SEVN[x.sev]+'] '+x.t);});
   lines.push('','VERPLICHTE WEBSITE-ELEMENTEN (alleen zinvol bij een volledige pagina)');websiteCheck(text).forEach(function(x){lines.push('- ['+SITEL[x.st]+'] '+x.lb+': '+x.dt);});
   lines.push('','Deze scan signaleert woorden en patronen en is geen juridisch advies.');
@@ -474,7 +479,7 @@ function buildReport(hits,text){
 // ---------- events
 $('scan').onclick=scan;
 $('voorbeeld').onclick=function(){$('txt').value=VOORBEELD;scan();};
-$('wis').onclick=function(){$('txt').value='';active=null;render([],'');$('count').textContent='';};
+$('wis').onclick=function(){$('txt').value='';recvPages=[];active=null;render([],'');$('count').textContent='';};
 $('txt').addEventListener('input',function(){var n=this.value.split(/\s+/).filter(Boolean).length;$('count').textContent=n?n+' woorden':'';});
 $('copy').onclick=function(){
   var ta=document.createElement('textarea');ta.value=lastReport;document.body.appendChild(ta);ta.select();
@@ -524,8 +529,17 @@ $('print').onclick=function(){
 
 // bookmarklet: laadt paginatekst via hash
 var toolUrl=location.href.split('#')[0];
-$('bm').href='javascript:(function(){var t=(document.querySelector("main")||document.body).innerText;window.open('+JSON.stringify(toolUrl)+'+"#t="+encodeURIComponent(t.slice(0,150000)));})();';
+$('bm').href='javascript:(function(){var t=(document.querySelector(\"main\")||document.body).innerText.slice(0,150000),p={dfo:1,title:document.title,url:location.href,text:t},u='+JSON.stringify(toolUrl)+',w=window.open(\"\",\"dfo_garantiewoorden_check\");var n=0,i=setInterval(function(){try{w.postMessage(p,\"*\");}catch(e){}if(++n>40)clearInterval(i);},250);window.addEventListener(\"message\",function(e){if(e.data&&e.data.dfoAck)clearInterval(i);});try{if(w.location.href===\"about:blank\")w.location=u;}catch(e){w.location=u;}w.focus();})();'
 $('bm').onclick=function(e){e.preventDefault();alert('Sleep deze link naar uw bladwijzerbalk in plaats van erop te klikken. De bladwijzer heet dan "DFO Garantiewoorden Check".');};
+window.addEventListener('message',function(e){
+  var d=e.data;if(!d||!d.dfo||typeof d.text!=='string')return;
+  if(e.source&&e.source.postMessage){try{e.source.postMessage({dfoAck:1},'*');}catch(x){}}
+  var key=d.url||d.title||'';if(key&&recvPages.indexOf(key)>=0)return;recvPages.push(key);
+  var head='=== Pagina: '+(d.title||'')+(d.url?' — '+d.url:'')+' ===';
+  var cur=$('txt').value;$('txt').value=(cur.trim()?cur.replace(/\s+$/,'')+'\n\n':'')+head+'\n'+d.text.trim()+'\n';
+  scan();
+});
+var recvPages=[];
 if(location.hash.indexOf('#t=')===0){try{$('txt').value=decodeURIComponent(location.hash.slice(3));history.replaceState(null,'',location.pathname+location.search);scan();}catch(e){}}
 })();
 </script>
